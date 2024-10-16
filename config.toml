@@ -7,7 +7,8 @@ compile_sass = false
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
-theme = "even"
+title = "Random Thoughts" # Otherwise, this will read "Home" in the nav
+theme = "feather"
 
 taxonomies = [
     # You can enable/disable RSS

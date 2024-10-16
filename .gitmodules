@@ -1,3 +1,6 @@
-[submodule "themes/even"]
-	path = themes/even
-	url = https://github.com/getzola/even
+[submodule "themes/feather"]
+	path = themes/feather
+	url = https://github.com/piedoom/feather
+# [submodule "themes/abridge"]
+# 	path = themes/abridge
+# 	url = https://github.com/jieiku/abridge.git

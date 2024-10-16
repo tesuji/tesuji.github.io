@@ -1,6 +1,8 @@
 +++
 title = "Not a step-by-step guide for Reverse engineering level 22.1"
 date = 2024-10-16
+[taxonomies]
+tags = ["re", "pwn.college"]
 +++
 
 Like the title says it, and to be comply with pwn.college's about not posting solutions
