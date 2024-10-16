@@ -170,7 +170,7 @@ By pushing "abcd\0" onto the stack, setting `b=1, c=5, a=1`,
 checking what value make the program print "abcd".
 Your thoughts are right! This will need 3 overlapping loops.
 But fear not, we exclude the known ones: `reg a, i, s, f, invalids`
-and `sys_exit, no-op ones`. The yan code left as exercise for readers.
+and `sys_exit, no-op ones`. The yan code left as a exercise for readers.
 
 You have three value: `sys_write, b, c`.
 
@@ -200,12 +200,13 @@ sys exit 0
 Why do we "push 0" 4 times? To let the first argument "a" be 4, which contains "a\0" on stack.
 Because if the syscall number is `read_mem|read_code`, `read(4,..)` will fail immediately.
 So check if the program exit with 4, you're good.
-Or with `a <= 3`, you could check if the program whether the program hangs or not.
+Or with `a <= 3`, you could check whether the program hangs or not.
 
 ## Find `sys_read_mem` (and `sys_read_code` but we don't need it)
+
 So, by filtering out `sys_exit, sleep, write, open`, and invalid ones.
-We left with two remaining values for read_mem and read_code. Both hangs the
-program for input. How do we different them?
+We left with two remaining values for `read_mem` and `read_code`.
+Both hangs the program for input. How do we different them?
 ```asm
 imm c 0xff
 imm b 4
