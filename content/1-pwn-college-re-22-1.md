@@ -33,7 +33,7 @@ authors could change it/recompile the source file.
 Load the binary into Ghidra or IDA to decompile. We could see that the yan code is encoded as `x, y, op`
 format.
 
-### Find the value of `imm` and `reg_i`
+## Find the value of `imm` and `reg_i`
 
 You're asking yourself how do you figure all the value of instructions, and registers, and syscall numbers.
 We finding the easy one first, the `imm i 3` instruction.
@@ -64,7 +64,7 @@ imm i 1
 
 Any regs (two) that crash the program is the invalid reg values that you could skip from your loop below.
 
-### Find `stk`
+## Find `stk`
 
 Why? Because we need `stk` to do useful things like pushing filename for the open syscall to use.
 If you have prior experience, you'll only need `imm`, `stk`, `sys` instruction to open, read
@@ -93,7 +93,7 @@ that hang the program, that's our `stk` value. Why? Replace `stk` in line 2 of t
   + => If not, the instruction fall-through at line 7 and crash invalid reg "0".
   We're lucky that `reg_i` is not a `sys_read`.
 
-### Find `sys`
+## Find `sys`
 
 As before, here's the yan code (use the same 'X' as before if you like):
 ```asm
@@ -108,7 +108,7 @@ How it works? Replace `sys` at line 2 with any `jmp, add, cmp, ldm, stm` (like `
 we have a crash at invalid reg "0".
 Find the only opcode that hang the program, that's our `op_sys` value.
 
-### Find `sys_exit` and `reg_a`
+## Find `sys_exit` and `reg_a`
 
 Easy enough:
 ```asm
@@ -117,13 +117,13 @@ sys exit X # exit 42
 invalid * 20
 ```
 
-How? If the `sys_op` is `open\|write\|sleep`, it will return and execute `INVALID_INSN` next.
-If `sys_op` is `read_code|read_mem`, the program will waiting for input and stuck there.
+How? If the `sys_op` is `open|write|sleep`, it will return and execute `INVALID_INSN` next.
+If `sys_op` is `read_code|read_mem`, we have `read(42, ..)` which fail immediately.
 Just detect the case the program returns 42, we have `sys_exit` and `reg_a` value.
 
-### Find invalid/no-op sys values
+## Find invalid/no-op sys values
 
-These value as syscall number do nothing, not event write to `y` reg (in `sys n y`).
+These value as syscall number do nothing, not even write to `y` reg (in `sys n y`).
 ```asm
 imm a 42
 sys n a
@@ -132,7 +132,7 @@ sys exit 0
 
 The no-op ones will exit with code 42.
 
-### Find `reg_s`
+## Find `reg_s`
 
 You're asking me why. Because we need to detect values of `b, c` to place the
 correct argument for `open/read/write` syscalls. So filtering out valid values
@@ -151,7 +151,7 @@ invalid * 20
 If the reg is `s`, we pop "0", not "6" from stack, makes the program loops.
 If not, it will crash.
 
-### Find `jmp` and `reg_f`
+## Find `jmp` and `reg_f`
 
 Same spirit:
 ```asm
@@ -164,7 +164,7 @@ imm i 4; loop
 invalid * 20
 ```
 
-### Find `sys_write` and `reg b, c`
+## Find `sys_write` and `reg b, c`
 
 By pushing "abcd\0" onto the stack, setting `b=1, c=5, a=1`,
 checking what value make the program print "abcd".
@@ -174,7 +174,7 @@ and `sys_exit, no-op ones`. The yan code left as exercise for readers.
 
 You have three value: `sys_write, b, c`.
 
-### Find `sys_sleep`
+## Find `sys_sleep`
 
 The easy one? By measuring execution time (in seconds):
 ```asm
@@ -183,7 +183,7 @@ sys sleep a
 invalid
 ```
 
-### Find `sys_open`
+## Find `sys_open`
 
 I was expecting to open a valid file with `fd=3`. But the program already have 3 opened. So 4 returned by `open` syscall.
 
@@ -197,11 +197,12 @@ sys open a
 sys exit 0
 ```
 
-You know "push 0" 4 times. Because if the syscall number is `read_mem|read_code`,
-`read(4,..)` will fail immediately.
+Why do we "push 0" 4 times? To let the first argument "a" be 4, which contains "a\0" on stack.
+Because if the syscall number is `read_mem|read_code`, `read(4,..)` will fail immediately.
 So check if the program exit with 4, you're good.
+Or with `a <= 3`, you could check if the program whether the program hangs or not.
 
-### Find `sys_read_mem` (and `sys_read_code` but we don't need it)
+## Find `sys_read_mem` (and `sys_read_code` but we don't need it)
 So, by filtering out `sys_exit, sleep, write, open`, and invalid ones.
 We left with two remaining values for read_mem and read_code. Both hangs the
 program for input. How do we different them?

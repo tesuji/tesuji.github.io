@@ -16,14 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        submodules: true
+        with:
+          submodules: true
       - name: Install zola
         run: |
-          echo "path=$PATH"
+          # echo "path=$PATH"
           ZOLA_URL=https://github.com/getzola/zola/releases/download/v0.19.2/zola-v0.19.2-x86_64-unknown-linux-gnu.tar.gz
           wget "$ZOLA_URL"
           tar xf zola-*-x86_64-unknown-linux-gnu.tar.gz
-          cp zola ~/.local/bin
+          mkdir -p ~/.local/bin
+          cp zola ~/.local/bin/
       - run: zola build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
